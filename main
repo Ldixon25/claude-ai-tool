@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FullStack Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Fraunces:ital,wght@0,300;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: #2a2a3a;
+    --text: #e8e8f0;
+    --muted: #7a7a9a;
+    --accent: #ff6b35;
+    --accent2: #00d4aa;
+    --accent3: #7c3aed;
+    --yellow: #ffd166;
+    --code-bg: #0d1117;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Space Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .logo {
+    padding: 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-text {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+
+  .logo-sub {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .progress-bar-wrap {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  .nav-section {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-section-title {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+    padding: 4px 20px 8px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 20px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--muted);
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+    line-height: 1.3;
+  }
+
+  .nav-item:hover {
+    color: var(--text);
+    background: var(--surface2);
+  }
+
+  .nav-item.active {
+    color: var(--text);
+    border-left-color: var(--accent);
+    background: var(--surface2);
+  }
+
+  .nav-item.done .nav-dot {
+    background: var(--accent2);
+  }
+
+  .nav-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+    border: 1px solid var(--muted);
+  }
+
+  .nav-item.active .nav-dot {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  /* MAIN CONTENT */
+  .main {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 40px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .topbar-left {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 8px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background: #ff8555;
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover {
+    color: var(--text);
+    border-color: var(--muted);
+  }
+
+  .btn-success {
+    background: var(--accent2);
+    color: #000;
+  }
+
+  .btn-success:hover {
+    background: #00f0c4;
+  }
+
+  /* LESSON AREA */
+  .lesson-area {
+    padding: 48px 60px;
+    max-width: 900px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .lesson-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 20px;
+  }
+
+  .lesson-tag span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .lesson-title {
+    font-family: 'Fraunces', serif;
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 12px;
+    letter-spacing: -1px;
+  }
+
+  .lesson-subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 36px;
+    line-height: 1.7;
+    max-width: 600px;
+  }
+
+  /* CONCEPT CARDS */
+  .concept-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+
+  .concept-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    transition: border-color 0.2s;
+    cursor: pointer;
+  }
+
+  .concept-card:hover {
+    border-color: var(--accent);
+  }
+
+  .concept-icon {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+
+  .concept-title {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+
+  .concept-desc {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 20px 0;
+    overflow: hidden;
+  }
+
+  .code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .code-lang {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent2);
+  }
+
+  .code-copy {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+  }
+
+  .code-copy:hover { color: var(--text); }
+
+  pre {
+    padding: 20px;
+    font-size: 12px;
+    line-height: 1.7;
+    overflow-x: auto;
+    color: #abb2bf;
+  }
+
+  .kw { color: #c678dd; }
+  .str { color: #98c379; }
+  .fn { color: #61afef; }
+  .cmt { color: #5c6370; font-style: italic; }
+  .num { color: #d19a66; }
+  .tag { color: #e06c75; }
+  .attr { color: #d19a66; }
+
+  /* EXPLANATION SECTIONS */
+  .section {
+    margin: 28px 0;
+  }
+
+  .section-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--accent2);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .section-body {
+    font-size: 13px;
+    line-height: 1.9;
+    color: #c0c0d8;
+  }
+
+  .highlight {
+    background: rgba(255, 107, 53, 0.12);
+    border-left: 3px solid var(--accent);
+    padding: 12px 16px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  /* QUIZ */
+  .quiz-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px;
+    margin: 28px 0;
+  }
+
+  .quiz-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--yellow);
+    margin-bottom: 12px;
+  }
+
+  .quiz-q {
+    font-size: 15px;
+    font-family: 'Fraunces', serif;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .quiz-option {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface2);
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+    letter-spacing: 0.3px;
+  }
+
+  .quiz-option:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .quiz-option.correct {
+    border-color: var(--accent2);
+    color: var(--accent2);
+    background: rgba(0, 212, 170, 0.08);
+  }
+
+  .quiz-option.wrong {
+    border-color: #ef4444;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.08);
+  }
+
+  .quiz-feedback {
+    margin-top: 14px;
+    font-size: 12px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    display: none;
+    line-height: 1.6;
+  }
+
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: rgba(0,212,170,0.1); color: var(--accent2); border: 1px solid var(--accent2); }
+  .quiz-feedback.bad { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid #ef4444; }
+
+  /* NAV BUTTONS */
+  .lesson-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ROADMAP VIEW */
+  .roadmap {
+    padding: 48px 60px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .roadmap-title {
+    font-family: 'Fraunces', serif;
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .roadmap-sub {
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 40px;
+  }
+
+  .roadmap-phase {
+    margin-bottom: 40px;
+  }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .phase-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .phase-name {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .phase-topics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-left: 48px;
+  }
+
+  .topic-chip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 11px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .topic-chip:hover {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+
+  .topic-chip.done {
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+
+  /* CHAT AI */
+  .ai-chat {
+    padding: 40px 60px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .ai-chat-title {
+    font-family: 'Fraunces', serif;
+    font-size: 30px;
+    margin-bottom: 6px;
+  }
+
+  .ai-chat-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  .chat-messages {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    height: 380px;
+    overflow-y: auto;
+    padding: 20px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .msg {
+    max-width: 80%;
+    font-size: 12px;
+    line-height: 1.7;
+    padding: 12px 16px;
+    border-radius: 8px;
+  }
+
+  .msg-user {
+    background: var(--accent);
+    color: #fff;
+    align-self: flex-end;
+    border-radius: 12px 12px 2px 12px;
+  }
+
+  .msg-ai {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    align-self: flex-start;
+    border-radius: 2px 12px 12px 12px;
+  }
+
+  .msg-ai.loading {
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .chat-input-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .chat-input {
+    flex: 1;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 16px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .chat-input:focus {
+    border-color: var(--accent);
+  }
+
+  .chat-input::placeholder { color: var(--muted); }
+
+  /* WELCOME */
+  .welcome {
+    padding: 60px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .welcome-eyebrow {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .welcome-title {
+    font-family: 'Fraunces', serif;
+    font-size: 52px;
+    font-weight: 700;
+    line-height: 1.05;
+    margin-bottom: 16px;
+    letter-spacing: -1.5px;
+  }
+
+  .welcome-title em {
+    font-style: italic;
+    color: var(--accent2);
+  }
+
+  .welcome-body {
+    font-size: 13px;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.9;
+    margin-bottom: 36px;
+  }
+
+  .welcome-stats {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 40px;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stat-num {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  .welcome-cta {
+    display: flex;
+    gap: 12px;
+  }
+
+  .tag-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 32px;
+  }
+
+  .tag {
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 3px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .lesson-area, .welcome, .roadmap, .ai-chat { padding: 24px; }
+    .concept-grid { grid-template-columns: 1fr; }
+    .phase-topics { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-text">FullStack.dev</div>
+      <div class="logo-sub">Job-Ready Curriculum</div>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <div class="progress-label">
+        <span>Overall Progress</span>
+        <span id="progress-pct">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Overview</div>
+      <div class="nav-item active" onclick="showView('welcome')">
+        <div class="nav-dot"></div>Home
+      </div>
+      <div class="nav-item" onclick="showView('roadmap')">
+        <div class="nav-dot"></div>Full Roadmap
+      </div>
+      <div class="nav-item" onclick="showView('ai-tutor')">
+        <div class="nav-dot"></div>AI Tutor
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Phase 1 — Frontend</div>
+      <div class="nav-item" id="nav-html" onclick="loadLesson('html')"><div class="nav-dot"></div>HTML & Semantics</div>
+      <div class="nav-item" id="nav-css" onclick="loadLesson('css')"><div class="nav-dot"></div>CSS & Layouts</div>
+      <div class="nav-item" id="nav-js" onclick="loadLesson('js')"><div class="nav-dot"></div>JavaScript Core</div>
+      <div class="nav-item" id="nav-dom" onclick="loadLesson('dom')"><div class="nav-dot"></div>DOM & Events</div>
+      <div class="nav-item" id="nav-react" onclick="loadLesson('react')"><div class="nav-dot"></div>React</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Phase 2 — Backend</div>
+      <div class="nav-item" id="nav-node" onclick="loadLesson('node')"><div class="nav-dot"></div>Node.js & NPM</div>
+      <div class="nav-item" id="nav-express" onclick="loadLesson('express')"><div class="nav-dot"></div>Express & REST APIs</div>
+      <div class="nav-item" id="nav-db" onclick="loadLesson('db')"><div class="nav-dot"></div>Databases & SQL</div>
+      <div class="nav-item" id="nav-auth" onclick="loadLesson('auth')"><div class="nav-dot"></div>Auth & Security</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Phase 3 — Pro Skills</div>
+      <div class="nav-item" id="nav-git" onclick="loadLesson('git')"><div class="nav-dot"></div>Git & GitHub</div>
+      <div class="nav-item" id="nav-deploy" onclick="loadLesson('deploy')"><div class="nav-dot"></div>Deployment</div>
+      <div class="nav-item" id="nav-interview" onclick="loadLesson('interview')"><div class="nav-dot"></div>Interview Prep</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left" id="topbar-label">FULLSTACK.DEV / HOME</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" onclick="showView('ai-tutor')">Ask AI Tutor</button>
+        <button class="btn btn-primary" id="mark-done-btn" onclick="markDone()" style="display:none">Mark Complete ✓</button>
+      </div>
+    </div>
+
+    <div id="content-area"></div>
+  </main>
+</div>
+
+<script>
+// ===================== DATA =====================
+const lessons = {
+  html: {
+    tag: 'Phase 1 · Frontend',
+    title: 'HTML & Semantics',
+    subtitle: 'HTML is the skeleton of every web page. Learn to structure content with meaning — not just divs and spans.',
+    concepts: [
+      { icon: '🏗️', title: 'Structure', desc: 'HTML defines the structure of a page using nested elements called tags.' },
+      { icon: '🏷️', title: 'Semantics', desc: 'Semantic tags like <article> and <nav> give meaning to content for browsers and SEO.' },
+      { icon: '♿', title: 'Accessibility', desc: 'Proper HTML makes sites usable with screen readers and keyboard navigation.' },
+      { icon: '📝', title: 'Forms', desc: 'HTML forms collect user input — crucial for login, search, and data entry.' }
+    ],
+    codeLabel: 'HTML',
+    code: `<span class="cmt">&lt;!-- Semantic HTML example --&gt;</span>
+<span class="tag">&lt;header&gt;</span>
+  <span class="tag">&lt;nav&gt;</span>
+    <span class="tag">&lt;ul&gt;</span>
+      <span class="tag">&lt;li&gt;&lt;a</span> <span class="attr">href</span>=<span class="str">"/"</span><span class="tag">&gt;</span>Home<span class="tag">&lt;/a&gt;&lt;/li&gt;</span>
+      <span class="tag">&lt;li&gt;&lt;a</span> <span class="attr">href</span>=<span class="str">"/about"</span><span class="tag">&gt;</span>About<span class="tag">&lt;/a&gt;&lt;/li&gt;</span>
+    <span class="tag">&lt;/ul&gt;</span>
+  <span class="tag">&lt;/nav&gt;</span>
+<span class="tag">&lt;/header&gt;</span>
+
+<span class="tag">&lt;main&gt;</span>
+  <span class="tag">&lt;article&gt;</span>
+    <span class="tag">&lt;h1&gt;</span>My Article Title<span class="tag">&lt;/h1&gt;</span>
+    <span class="tag">&lt;p&gt;</span>Content here...<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/article&gt;</span>
+<span class="tag">&lt;/main&gt;</span>
+
+<span class="tag">&lt;footer&gt;</span>© 2026<span class="tag">&lt;/footer&gt;</span>`,
+    explain: 'Semantic HTML tags describe the <em>purpose</em> of content, not just its appearance. Employers specifically look for semantic HTML because it shows you understand web standards, SEO, and accessibility.',
+    highlight: '💡 Pro tip: Interviewers often ask "what's the difference between a div and a section?" — Divs are generic containers with no meaning. Section implies a thematic grouping of content.',
+    quiz: {
+      q: 'Which HTML element should wrap your site\'s main navigation links?',
+      options: ['<div class="nav">', '<nav>', '<ul>', '<header>'],
+      correct: 1,
+      explanation: 'The <nav> element semantically marks navigation. It helps screen readers and search engines understand the site structure.'
+    }
+  },
+
+  css: {
+    tag: 'Phase 1 · Frontend',
+    title: 'CSS & Modern Layouts',
+    subtitle: 'CSS makes things look good. Master Flexbox, Grid, and responsive design — the skills every job posting demands.',
+    concepts: [
+      { icon: '📦', title: 'Box Model', desc: 'Every element is a box: content + padding + border + margin. Understanding this prevents layout bugs.' },
+      { icon: '↔️', title: 'Flexbox', desc: 'One-dimensional layout for rows or columns. Essential for navbars, cards, and centering.' },
+      { icon: '🔲', title: 'CSS Grid', desc: 'Two-dimensional layout system. Perfect for page layouts, dashboards, and galleries.' },
+      { icon: '📱', title: 'Responsive', desc: 'Media queries adapt your layout for mobile, tablet, and desktop screens.' }
+    ],
+    codeLabel: 'CSS',
+    code: `<span class="cmt">/* Flexbox nav */</span>
+<span class="fn">.navbar</span> {
+  <span class="attr">display</span>: <span class="str">flex</span>;
+  <span class="attr">justify-content</span>: <span class="str">space-between</span>;
+  <span class="attr">align-items</span>: <span class="str">center</span>;
+  <span class="attr">padding</span>: <span class="num">16px 32px</span>;
+}
+
+<span class="cmt">/* CSS Grid layout */</span>
+<span class="fn">.page</span> {
+  <span class="attr">display</span>: <span class="str">grid</span>;
+  <span class="attr">grid-template-columns</span>: <span class="num">250px</span> <span class="str">1fr</span>;
+  <span class="attr">gap</span>: <span class="num">24px</span>;
+  <span class="attr">min-height</span>: <span class="num">100vh</span>;
+}
+
+<span class="cmt">/* Responsive breakpoint */</span>
+<span class="kw">@media</span> (max-width: <span class="num">768px</span>) {
+  <span class="fn">.page</span> {
+    <span class="attr">grid-template-columns</span>: <span class="str">1fr</span>;
+  }
+}`,
+    explain: 'Flexbox and CSS Grid are the two most important layout tools in modern CSS. Flexbox handles single-axis layouts (nav bars, button groups). Grid handles two-axis layouts (full page layouts, dashboards).',
+    highlight: '💡 Employers test CSS constantly. Be able to center a div 3 different ways, build a responsive card grid without JS, and explain when to use Flex vs Grid.',
+    quiz: {
+      q: 'Which CSS property creates a two-column layout with a sidebar and main content area?',
+      options: ['display: flex', 'display: grid; grid-template-columns: 250px 1fr', 'float: left', 'position: absolute'],
+      correct: 1,
+      explanation: 'CSS Grid with grid-template-columns is the modern way to create multi-column page layouts. It gives you precise control over both axes.'
+    }
+  },
+
+  js: {
+    tag: 'Phase 1 · Frontend',
+    title: 'JavaScript Core',
+    subtitle: 'JavaScript makes pages interactive. Master modern ES6+ syntax — this is where most interviews go deep.',
+    concepts: [
+      { icon: '🔄', title: 'Async/Await', desc: 'Handle asynchronous operations like API calls cleanly without callback hell.' },
+      { icon: '🗃️', title: 'Array Methods', desc: 'map(), filter(), reduce() are used constantly in real codebases.' },
+      { icon: '🎯', title: 'Closures', desc: 'Functions that remember their outer scope — a classic interview topic.' },
+      { icon: '🧱', title: 'Modules', desc: 'import/export syntax organizes code across files — the modern standard.' }
+    ],
+    codeLabel: 'JavaScript (ES6+)',
+    code: `<span class="cmt">// Modern async data fetching</span>
+<span class="kw">const</span> <span class="fn">fetchUsers</span> = <span class="kw">async</span> () => {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> res = <span class="kw">await</span> fetch(<span class="str">'/api/users'</span>);
+    <span class="kw">const</span> users = <span class="kw">await</span> res.<span class="fn">json</span>();
+
+    <span class="cmt">// Array methods — used everywhere</span>
+    <span class="kw">const</span> active = users
+      .<span class="fn">filter</span>(u => u.active)
+      .<span class="fn">map</span>(u => ({ name: u.name, id: u.id }))
+      .<span class="fn">sort</span>((a, b) => a.name.<span class="fn">localeCompare</span>(b.name));
+
+    <span class="kw">return</span> active;
+  } <span class="kw">catch</span> (err) {
+    console.<span class="fn">error</span>(<span class="str">'Failed to fetch:'</span>, err);
+  }
+};`,
+    explain: 'Modern JavaScript (ES6+) is expected in every frontend and Node.js role. Key topics: arrow functions, destructuring, spread/rest, async/await, and the core array methods. These appear in technical interviews constantly.',
+    highlight: '💡 Interview gold: Be ready to explain "what is a Promise?", "how does async/await work under the hood?", and implement a debounce function from scratch.',
+    quiz: {
+      q: 'What does Array.filter() return?',
+      options: ['The first element that matches', 'A new array with matching elements', 'The index of the first match', 'A boolean'],
+      correct: 1,
+      explanation: 'filter() returns a NEW array (it doesn\'t mutate the original) containing only the elements where the callback returns true.'
+    }
+  },
+
+  dom: {
+    tag: 'Phase 1 · Frontend',
+    title: 'DOM & Events',
+    subtitle: 'The DOM is the live representation of your HTML in memory. JavaScript manipulates it to create dynamic UIs.',
+    concepts: [
+      { icon: '🌳', title: 'DOM Tree', desc: 'The browser parses HTML into a tree of nodes JavaScript can query and modify.' },
+      { icon: '🎯', title: 'Event Listeners', desc: 'addEventListener() reacts to clicks, inputs, scrolls, and keyboard events.' },
+      { icon: '🔁', title: 'Event Delegation', desc: 'Attach one listener to a parent instead of dozens to children — a perf best practice.' },
+      { icon: '⚡', title: 'Performance', desc: 'Minimize reflows: batch DOM reads, use DocumentFragment for large insertions.' }
+    ],
+    codeLabel: 'JavaScript',
+    code: `<span class="cmt">// Selecting elements</span>
+<span class="kw">const</span> btn = document.<span class="fn">querySelector</span>(<span class="str">'#submit-btn'</span>);
+<span class="kw">const</span> list = document.<span class="fn">querySelector</span>(<span class="str">'.todo-list'</span>);
+
+<span class="cmt">// Event listener</span>
+btn.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, (e) => {
+  e.<span class="fn">preventDefault</span>();
+  <span class="fn">addItem</span>();
+});
+
+<span class="cmt">// Event delegation (efficient)</span>
+list.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, (e) => {
+  <span class="kw">if</span> (e.target.<span class="fn">matches</span>(<span class="str">'.delete-btn'</span>)) {
+    e.target.closest(<span class="str">'li'</span>).<span class="fn">remove</span>();
+  }
+});`,
+    explain: 'DOM manipulation is foundational. Even React developers need to understand what happens under the hood. Event delegation is especially important — it\'s faster and handles dynamically added elements automatically.',
+    highlight: '💡 Common mistake: attaching event listeners inside loops creates memory leaks. Use event delegation instead — one listener on the parent, check event.target inside.',
+    quiz: {
+      q: 'What is event delegation?',
+      options: ['Removing event listeners when done', 'Attaching a listener to a parent to handle events from children', 'Using multiple events on one element', 'Preventing default browser behavior'],
+      correct: 1,
+      explanation: 'Event delegation attaches one listener to a parent element and uses event.target to determine which child triggered it. It\'s more efficient and works with dynamically added elements.'
+    }
+  },
+
+  react: {
+    tag: 'Phase 1 · Frontend',
+    title: 'React',
+    subtitle: 'React is the most in-demand frontend framework. Master components, hooks, and state — it\'s on every job posting.',
+    concepts: [
+      { icon: '🧩', title: 'Components', desc: 'Reusable UI pieces. Functions that accept props and return JSX.' },
+      { icon: '🪝', title: 'Hooks', desc: 'useState, useEffect, useContext — the modern way to add logic to function components.' },
+      { icon: '🌊', title: 'Data Flow', desc: 'Props flow down, events flow up. One-way data flow makes UIs predictable.' },
+      { icon: '🔧', title: 'State Management', desc: 'Local state with useState; global state with Context or Zustand/Redux.' }
+    ],
+    codeLabel: 'React (JSX)',
+    code: `<span class="kw">import</span> { useState, useEffect } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">UserCard</span>({ userId }) {
+  <span class="kw">const</span> [user, setUser] = <span class="fn">useState</span>(<span class="kw">null</span>);
+  <span class="kw">const</span> [loading, setLoading] = <span class="fn">useState</span>(<span class="kw">true</span>);
+
+  <span class="fn">useEffect</span>(() => {
+    fetch(<span class="str">\`/api/users/\${userId}\`</span>)
+      .<span class="fn">then</span>(r => r.<span class="fn">json</span>())
+      .<span class="fn">then</span>(data => {
+        <span class="fn">setUser</span>(data);
+        <span class="fn">setLoading</span>(<span class="kw">false</span>);
+      });
+  }, [userId]); <span class="cmt">// re-run when userId changes</span>
+
+  <span class="kw">if</span> (loading) <span class="kw">return</span> &lt;<span class="tag">p</span>&gt;Loading...&lt;/<span class="tag">p</span>&gt;;
+
+  <span class="kw">return</span> (
+    &lt;<span class="tag">div</span> <span class="attr">className</span>=<span class="str">"card"</span>&gt;
+      &lt;<span class="tag">h2</span>&gt;{user.name}&lt;/<span class="tag">h2</span>&gt;
+      &lt;<span class="tag">p</span>&gt;{user.email}&lt;/<span class="tag">p</span>&gt;
+    &lt;/<span class="tag">div</span>&gt;
+  );
+}`,
+    explain: 'React\'s component model and hooks system are what you\'ll use daily in a frontend job. useState manages local state, useEffect handles side effects (data fetching, subscriptions). The dependency array in useEffect controls when it re-runs.',
+    highlight: '💡 Most common interview questions: "Explain the useEffect dependency array", "What is the virtual DOM?", "When would you lift state up?", "What\'s the difference between controlled and uncontrolled components?"',
+    quiz: {
+      q: 'What does the empty array [] as useEffect\'s second argument mean?',
+      options: ['Run on every render', 'Run once on mount only', 'Never run', 'Run when component unmounts'],
+      correct: 1,
+      explanation: 'An empty dependency array [] means useEffect runs exactly once after the first render (mount). It\'s commonly used for initial data fetching.'
+    }
+  },
+
+  node: {
+    tag: 'Phase 2 · Backend',
+    title: 'Node.js & NPM',
+    subtitle: 'Node.js lets you run JavaScript on the server. NPM gives you access to 2M+ packages. This is where the backend starts.',
+    concepts: [
+      { icon: '⚙️', title: 'Event Loop', desc: 'Node.js is single-threaded but non-blocking — it handles concurrent requests via the event loop.' },
+      { icon: '📦', title: 'NPM / packages', desc: 'package.json tracks dependencies. npm install, npm run, npm scripts.' },
+      { icon: '🔌', title: 'Modules', desc: 'CommonJS (require) and ES Modules (import) — Node.js supports both.' },
+      { icon: '🌊', title: 'Streams', desc: 'Read/write large data in chunks — essential for file handling and file uploads.' }
+    ],
+    codeLabel: 'Node.js',
+    code: `<span class="cmt">// Built-in file system module</span>
+<span class="kw">const</span> fs = <span class="fn">require</span>(<span class="str">'fs/promises'</span>);
+<span class="kw">const</span> path = <span class="fn">require</span>(<span class="str">'path'</span>);
+
+<span class="kw">async function</span> <span class="fn">readConfig</span>() {
+  <span class="kw">const</span> filePath = path.<span class="fn">join</span>(__dirname, <span class="str">'config.json'</span>);
+  <span class="kw">const</span> raw = <span class="kw">await</span> fs.<span class="fn">readFile</span>(filePath, <span class="str">'utf8'</span>);
+  <span class="kw">return</span> JSON.<span class="fn">parse</span>(raw);
+}
+
+<span class="cmt">// package.json scripts</span>
+{
+  <span class="str">"scripts"</span>: {
+    <span class="str">"start"</span>: <span class="str">"node index.js"</span>,
+    <span class="str">"dev"</span>: <span class="str">"nodemon index.js"</span>,
+    <span class="str">"test"</span>: <span class="str">"jest"</span>
+  }
+}`,
+    explain: 'Node.js is the runtime — it executes JavaScript outside the browser. NPM is its package manager. In a job, you\'ll use npm scripts constantly (npm run dev, npm run build, npm test) and understand how node_modules and package-lock.json work.',
+    highlight: '💡 Key concepts employers ask about: the Node.js event loop, blocking vs non-blocking I/O, and the difference between dependencies and devDependencies in package.json.',
+    quiz: {
+      q: 'Where should you list packages only needed during development (like testing tools)?',
+      options: ['dependencies', 'devDependencies', 'peerDependencies', '.npmrc'],
+      correct: 1,
+      explanation: 'devDependencies are only installed in development, not in production builds. This keeps production bundles lean. Testing frameworks, linters, and bundlers go here.'
+    }
+  },
+
+  express: {
+    tag: 'Phase 2 · Backend',
+    title: 'Express & REST APIs',
+    subtitle: 'Express is the most popular Node.js framework. You\'ll build REST APIs that your React frontend consumes.',
+    concepts: [
+      { icon: '🛣️', title: 'Routing', desc: 'Define GET, POST, PUT, DELETE routes that respond to HTTP requests.' },
+      { icon: '🔗', title: 'Middleware', desc: 'Functions that run between request and response — for auth, logging, validation.' },
+      { icon: '📐', title: 'REST Design', desc: 'Use nouns for resources, HTTP verbs for actions: GET /users, POST /users, DELETE /users/:id' },
+      { icon: '🚨', title: 'Error Handling', desc: 'Always have a global error handler middleware as the last middleware in the chain.' }
+    ],
+    codeLabel: 'Node.js / Express',
+    code: `<span class="kw">const</span> express = <span class="fn">require</span>(<span class="str">'express'</span>);
+<span class="kw">const</span> app = <span class="fn">express</span>();
+
+app.<span class="fn">use</span>(express.<span class="fn">json</span>()); <span class="cmt">// parse JSON bodies</span>
+
+<span class="cmt">// GET all users</span>
+app.<span class="fn">get</span>(<span class="str">'/api/users'</span>, <span class="kw">async</span> (req, res) => {
+  <span class="kw">const</span> users = <span class="kw">await</span> db.<span class="fn">query</span>(<span class="str">'SELECT * FROM users'</span>);
+  res.<span class="fn">json</span>(users);
+});
+
+<span class="cmt">// POST create user</span>
+app.<span class="fn">post</span>(<span class="str">'/api/users'</span>, <span class="kw">async</span> (req, res) => {
+  <span class="kw">const</span> { name, email } = req.body;
+  <span class="kw">const</span> user = <span class="kw">await</span> db.<span class="fn">create</span>({ name, email });
+  res.<span class="fn">status</span>(<span class="num">201</span>).<span class="fn">json</span>(user);
+});
+
+<span class="cmt">// Global error handler</span>
+app.<span class="fn">use</span>((err, req, res, next) => {
+  res.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({ error: err.message });
+});
+
+app.<span class="fn">listen</span>(<span class="num">3000</span>);`,
+    explain: 'Express is minimal by design — it gives you routing and middleware, and you choose the rest. In a job, you\'ll build RESTful APIs with proper status codes (200, 201, 400, 401, 404, 500), middleware for auth, and input validation.',
+    highlight: '💡 REST interview must-knows: HTTP methods (GET=read, POST=create, PUT/PATCH=update, DELETE=delete), status codes, and the difference between query params (?id=1) vs route params (/users/:id).',
+    quiz: {
+      q: 'What HTTP status code should a successful resource creation return?',
+      options: ['200 OK', '201 Created', '204 No Content', '301 Redirect'],
+      correct: 1,
+      explanation: '201 Created is the correct status for a successful POST that creates a new resource. 200 OK is for successful GET/PUT requests.'
+    }
+  },
+
+  db: {
+    tag: 'Phase 2 · Backend',
+    title: 'Databases & SQL',
+    subtitle: 'Every app needs persistent data. Learn SQL (PostgreSQL/MySQL) and how to use an ORM like Prisma.',
+    concepts: [
+      { icon: '🗄️', title: 'SQL Basics', desc: 'SELECT, INSERT, UPDATE, DELETE — the four core operations on relational data.' },
+      { icon: '🔗', title: 'Joins', desc: 'Combine data from multiple tables: INNER JOIN, LEFT JOIN. Essential for relational data.' },
+      { icon: '📐', title: 'Schema Design', desc: 'Primary keys, foreign keys, normalization — design tables that prevent data duplication.' },
+      { icon: '🔧', title: 'ORM / Prisma', desc: 'Query databases with JavaScript objects instead of raw SQL — faster and safer.' }
+    ],
+    codeLabel: 'SQL + Prisma',
+    code: `<span class="cmt">-- SQL: Get users with their posts</span>
+<span class="kw">SELECT</span> users.name, posts.title
+<span class="kw">FROM</span> users
+<span class="kw">INNER JOIN</span> posts <span class="kw">ON</span> posts.user_id = users.id
+<span class="kw">WHERE</span> users.active = <span class="str">true</span>
+<span class="kw">ORDER BY</span> posts.created_at <span class="kw">DESC</span>;
+
+<span class="cmt">// Prisma ORM equivalent</span>
+<span class="kw">const</span> users = <span class="kw">await</span> prisma.user.<span class="fn">findMany</span>({
+  where: { active: <span class="kw">true</span> },
+  include: {
+    posts: {
+      orderBy: { createdAt: <span class="str">'desc'</span> }
+    }
+  }
+});`,
+    explain: 'SQL is a required skill for most backend roles. PostgreSQL is the most popular choice for production apps. Prisma has become the go-to ORM in the Node.js/TypeScript ecosystem — it generates type-safe database queries.',
+    highlight: '💡 Know the difference between SQL and NoSQL. Interviewers ask: "When would you choose MongoDB over PostgreSQL?" Answer: unstructured/variable data vs structured relational data.',
+    quiz: {
+      q: 'What is a foreign key?',
+      options: ['A key from another application', 'A column that references the primary key of another table', 'An encrypted column', 'The second index on a table'],
+      correct: 1,
+      explanation: 'A foreign key is a column that creates a link between two tables by referencing the primary key of another table. It enforces referential integrity.'
+    }
+  },
+
+  auth: {
+    tag: 'Phase 2 · Backend',
+    title: 'Auth & Security',
+    subtitle: 'Authentication is critical and tricky to get right. Learn JWT, hashing, and common security pitfalls.',
+    concepts: [
+      { icon: '🔐', title: 'Password Hashing', desc: 'Never store plain passwords. Use bcrypt to hash passwords before storing.' },
+      { icon: '🎫', title: 'JWT Tokens', desc: 'Stateless auth tokens — signed JSON the client sends with each request.' },
+      { icon: '🔒', title: 'HTTPS & CORS', desc: 'HTTPS encrypts transit. CORS controls which origins can call your API.' },
+      { icon: '🛡️', title: 'Common Attacks', desc: 'SQL injection, XSS, CSRF — know what they are and how to prevent them.' }
+    ],
+    codeLabel: 'Node.js / Auth',
+    code: `<span class="kw">const</span> bcrypt = <span class="fn">require</span>(<span class="str">'bcrypt'</span>);
+<span class="kw">const</span> jwt = <span class="fn">require</span>(<span class="str">'jsonwebtoken'</span>);
+
+<span class="cmt">// Register: hash password</span>
+<span class="kw">const</span> <span class="fn">register</span> = <span class="kw">async</span> (email, password) => {
+  <span class="kw">const</span> hashed = <span class="kw">await</span> bcrypt.<span class="fn">hash</span>(password, <span class="num">10</span>);
+  <span class="kw">await</span> db.<span class="fn">createUser</span>({ email, password: hashed });
+};
+
+<span class="cmt">// Login: verify + issue JWT</span>
+<span class="kw">const</span> <span class="fn">login</span> = <span class="kw">async</span> (email, password) => {
+  <span class="kw">const</span> user = <span class="kw">await</span> db.<span class="fn">findUser</span>(email);
+  <span class="kw">const</span> valid = <span class="kw">await</span> bcrypt.<span class="fn">compare</span>(password, user.password);
+  <span class="kw">if</span> (!valid) <span class="kw">throw new</span> Error(<span class="str">'Invalid credentials'</span>);
+
+  <span class="kw">return</span> jwt.<span class="fn">sign</span>(
+    { userId: user.id },
+    process.env.JWT_SECRET,
+    { expiresIn: <span class="str">'7d'</span> }
+  );
+};`,
+    explain: 'Auth is where many junior devs make costly mistakes. Golden rules: always hash passwords (bcrypt), never store JWT secrets in code (use env vars), validate all input server-side, and use HTTPS in production.',
+    highlight: '💡 Interviewers love security questions: "How do JWTs work?", "What\'s the difference between authentication and authorization?", "How would you prevent SQL injection?"',
+    quiz: {
+      q: 'Why should you use bcrypt instead of SHA-256 for password hashing?',
+      options: ['bcrypt is faster', 'bcrypt is intentionally slow and includes a salt by default', 'SHA-256 is deprecated', 'bcrypt uses more memory'],
+      correct: 1,
+      explanation: 'bcrypt is designed to be slow, which makes brute-force attacks computationally expensive. It also automatically generates and stores a salt, preventing rainbow table attacks.'
+    }
+  },
+
+  git: {
+    tag: 'Phase 3 · Pro Skills',
+    title: 'Git & GitHub',
+    subtitle: 'Git is non-negotiable. Every job requires it. Master branching, pull requests, and resolving conflicts.',
+    concepts: [
+      { icon: '🌿', title: 'Branching', desc: 'Create branches for each feature. Never commit directly to main.' },
+      { icon: '🔀', title: 'Pull Requests', desc: 'PRs are how teams review and merge code. Learn to write clear PR descriptions.' },
+      { icon: '⚔️', title: 'Merge Conflicts', desc: 'When two branches edit the same lines, you must manually resolve the conflict.' },
+      { icon: '📜', title: 'Commit Messages', desc: 'Good commits: "feat: add user auth" not "fixed stuff". Follow conventional commits.' }
+    ],
+    codeLabel: 'Git CLI',
+    code: `<span class="cmt"># Daily git workflow</span>
+git checkout -b <span class="str">feature/user-auth</span>   <span class="cmt"># create branch</span>
+
+<span class="cmt"># Make changes, then:</span>
+git add .
+git commit -m <span class="str">"feat: add JWT authentication"</span>
+git push origin feature/user-auth
+
+<span class="cmt"># After PR is merged, clean up:</span>
+git checkout main
+git pull origin main
+git branch -d feature/user-auth
+
+<span class="cmt"># Undo last commit (keep changes)</span>
+git reset --soft HEAD~1
+
+<span class="cmt"># View full history</span>
+git log --oneline --graph`,
+    explain: 'Git is the version control system — GitHub is where you host it. In a team, you\'ll never push to main directly. You branch, commit, push, open a PR, get it reviewed, then merge. This flow is standard everywhere.',
+    highlight: '💡 Must-know git commands: git stash, git rebase, git cherry-pick, git bisect. Understand HEAD, staging area, and the difference between merge and rebase.',
+    quiz: {
+      q: 'What does "git reset --soft HEAD~1" do?',
+      options: ['Deletes the last commit and all changes', 'Undoes the last commit but keeps the changes staged', 'Merges the last commit into main', 'Creates a new branch from the last commit'],
+      correct: 1,
+      explanation: '--soft keeps your changes staged (in the index). --mixed keeps them unstaged. --hard deletes everything. "HEAD~1" means "one commit before HEAD".'
+    }
+  },
+
+  deploy: {
+    tag: 'Phase 3 · Pro Skills',
+    title: 'Deployment',
+    subtitle: 'Getting your app live is a job skill. Learn CI/CD, environment variables, and the basics of cloud hosting.',
+    concepts: [
+      { icon: '☁️', title: 'Cloud Hosting', desc: 'Vercel for frontends. Railway/Render for backends. AWS/GCP for enterprise scale.' },
+      { icon: '🔁', title: 'CI/CD', desc: 'Automated pipelines that test and deploy on every push. GitHub Actions is the standard.' },
+      { icon: '🔑', title: 'Env Variables', desc: 'Never hardcode secrets. Use .env files locally, and platform secrets in production.' },
+      { icon: '🐳', title: 'Docker basics', desc: 'Containers package your app and its dependencies — same behavior everywhere it runs.' }
+    ],
+    codeLabel: 'GitHub Actions (CI/CD)',
+    code: `<span class="cmt"># .github/workflows/deploy.yml</span>
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  <span class="fn">deploy</span>:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install
+        run: npm ci
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to Vercel
+        run: npx vercel --prod
+        env:
+          VERCEL_TOKEN: <span class="str">${{ secrets.VERCEL_TOKEN }}</span>`,
+    explain: 'CI/CD (Continuous Integration / Continuous Deployment) means tests run automatically on every push, and if they pass, the app deploys. This is standard at every serious company.',
+    highlight: '💡 For job interviews: know the difference between a VM and a container, explain what happens when you type a URL in a browser (DNS → TCP → HTTP → render), and understand what environment variables are used for.',
+    quiz: {
+      q: 'What is the purpose of a .env file?',
+      options: ['Store all source code', 'Store environment-specific secrets like API keys and DB URLs', 'Configure the package manager', 'Define CI/CD pipelines'],
+      correct: 1,
+      explanation: '.env files store secrets (API keys, database connection strings) that differ between environments. They should NEVER be committed to git — add them to .gitignore.'
+    }
+  },
+
+  interview: {
+    tag: 'Phase 3 · Pro Skills',
+    title: 'Interview Prep',
+    subtitle: 'Land the job. Know what to expect in technical interviews, what to build in your portfolio, and how to talk about code.',
+    concepts: [
+      { icon: '🧩', title: 'Data Structures', desc: 'Arrays, objects, linked lists, trees — know the basics and their time complexity.' },
+      { icon: '🖥️', title: 'Portfolio Projects', desc: 'Build 2-3 full-stack apps with auth, CRUD, and deployment. GitHub must be active.' },
+      { icon: '💬', title: 'Behavioral', desc: 'STAR method: Situation, Task, Action, Result. Prepare 5 stories.' },
+      { icon: '🔍', title: 'System Design', desc: 'For senior roles: explain how to design scalable systems (caching, load balancing).' }
+    ],
+    codeLabel: 'JavaScript (Common Leetcode patterns)',
+    code: `<span class="cmt">// Two sum — classic interview problem</span>
+<span class="kw">function</span> <span class="fn">twoSum</span>(nums, target) {
+  <span class="kw">const</span> map = <span class="kw">new</span> Map(); <span class="cmt">// O(1) lookup</span>
+
+  <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i < nums.length; i++) {
+    <span class="kw">const</span> complement = target - nums[i];
+
+    <span class="kw">if</span> (map.<span class="fn">has</span>(complement)) {
+      <span class="kw">return</span> [map.<span class="fn">get</span>(complement), i];
+    }
+    map.<span class="fn">set</span>(nums[i], i);
+  }
+}
+<span class="cmt">// O(n) time, O(n) space — explain your reasoning!</span>
+
+<span class="cmt">// FizzBuzz — still asked in 2026</span>
+<span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">1</span>; i <= <span class="num">100</span>; i++) {
+  <span class="kw">if</span> (i % <span class="num">15</span> === <span class="num">0</span>) console.<span class="fn">log</span>(<span class="str">'FizzBuzz'</span>);
+  <span class="kw">else if</span> (i % <span class="num">3</span> === <span class="num">0</span>) console.<span class="fn">log</span>(<span class="str">'Fizz'</span>);
+  <span class="kw">else if</span> (i % <span class="num">5</span> === <span class="num">0</span>) console.<span class="fn">log</span>(<span class="str">'Buzz'</span>);
+  <span class="kw">else</span> console.<span class="fn">log</span>(i);
+}`,
+    explain: 'Technical interviews test coding, system design, and cultural fit. For full-stack roles, you\'ll typically solve 1-2 coding problems and discuss a project you built. Always talk through your thinking out loud — that\'s what they\'re evaluating.',
+    highlight: '💡 Portfolio checklist: 1) A full-stack app with user auth (login/register), 2) CRUD operations, 3) Deployed and live, 4) Clean GitHub repo with README. That\'s more than most candidates have.',
+    quiz: {
+      q: 'What time complexity is a HashMap (Map/Object) lookup in JavaScript?',
+      options: ['O(n)', 'O(log n)', 'O(1)', 'O(n²)'],
+      correct: 2,
+      explanation: 'Hash map lookups are O(1) — constant time. This is why using a Map to store values you\'ve seen turns an O(n²) brute force into O(n) — a classic interview optimization.'
+    }
+  }
+};
+
+// ===================== STATE =====================
+const completed = new Set();
+let currentLesson = null;
+const totalLessons = Object.keys(lessons).length;
+
+// ===================== VIEWS =====================
+function showView(view) {
+  setActive(null);
+  document.getElementById('mark-done-btn').style.display = 'none';
+  document.getElementById('topbar-label').textContent = 'FULLSTACK.DEV / ' + view.toUpperCase().replace('-', ' ');
+
+  if (view === 'welcome') renderWelcome();
+  else if (view === 'roadmap') renderRoadmap();
+  else if (view === 'ai-tutor') renderAiTutor();
+}
+
+function setActive(lessonKey) {
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.remove('active');
+  });
+  if (lessonKey) {
+    const el = document.getElementById('nav-' + lessonKey);
+    if (el) el.classList.add('active');
+  }
+}
+
+// ===================== WELCOME =====================
+function renderWelcome() {
+  const done = completed.size;
+  document.getElementById('content-area').innerHTML = `
+    <div class="welcome">
+      <div class="welcome-eyebrow">Your path to employment</div>
+      <div class="welcome-title">Become a<br><em>Full-Stack</em><br>Developer.</div>
+      <div class="welcome-body">
+        A structured, job-focused curriculum covering everything from your first HTML tag to deploying production APIs. 
+        Each lesson teaches what employers actually test in interviews.
+      </div>
+      <div class="welcome-stats">
+        <div class="stat">
+          <div class="stat-num">${totalLessons}</div>
+          <div class="stat-label">Lessons</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">3</div>
+          <div class="stat-label">Phases</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">${done}</div>
+          <div class="stat-label">Completed</div>
+        </div>
+      </div>
+      <div class="welcome-cta">
+        <button class="btn btn-primary" onclick="loadLesson('html')">Start Learning →</button>
+        <button class="btn btn-ghost" onclick="showView('roadmap')">View Roadmap</button>
+      </div>
+      <div class="tag-row">
+        <span class="tag">HTML5</span><span class="tag">CSS3</span><span class="tag">JavaScript</span>
+        <span class="tag">React</span><span class="tag">Node.js</span><span class="tag">Express</span>
+        <span class="tag">PostgreSQL</span><span class="tag">Git</span><span class="tag">Docker</span>
+        <span class="tag">REST APIs</span><span class="tag">JWT Auth</span><span class="tag">CI/CD</span>
+      </div>
+    </div>
+  `;
+}
+
+// ===================== ROADMAP =====================
+function renderRoadmap() {
+  const phases = [
+    {
+      name: 'Frontend Fundamentals',
+      keys: ['html','css','js','dom','react'],
+      labels: ['HTML & Semantics','CSS & Layouts','JavaScript Core','DOM & Events','React']
+    },
+    {
+      name: 'Backend Development',
+      keys: ['node','express','db','auth'],
+      labels: ['Node.js & NPM','Express & APIs','Databases & SQL','Auth & Security']
+    },
+    {
+      name: 'Professional Skills',
+      keys: ['git','deploy','interview'],
+      labels: ['Git & GitHub','Deployment','Interview Prep']
+    }
+  ];
+
+  const html = phases.map((phase, i) => `
+    <div class="roadmap-phase">
+      <div class="phase-header">
+        <div class="phase-num">${i + 1}</div>
+        <div class="phase-name">${phase.name}</div>
+      </div>
+      <div class="phase-topics">
+        ${phase.keys.map((k, j) => `
+          <div class="topic-chip ${completed.has(k) ? 'done' : ''}" onclick="loadLesson('${k}')">
+            ${completed.has(k) ? '✓ ' : ''}${phase.labels[j]}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('content-area').innerHTML = `
+    <div class="roadmap">
+      <div class="roadmap-title">Full-Stack Roadmap</div>
+      <div class="roadmap-sub">Click any topic to jump into that lesson. Complete them in order for best results.</div>
+      ${html}
+    </div>
+  `;
+}
+
+// ===================== LESSON =====================
+function loadLesson(key) {
+  currentLesson = key;
+  const l = lessons[key];
+  setActive(key);
+  document.getElementById('mark-done-btn').style.display = completed.has(key) ? 'none' : 'block';
+  document.getElementById('topbar-label').textContent = 'FULLSTACK.DEV / ' + l.title.toUpperCase();
+
+  const keys = Object.keys(lessons);
+  const idx = keys.indexOf(key);
+  const prevKey = idx > 0 ? keys[idx - 1] : null;
+  const nextKey = idx < keys.length - 1 ? keys[idx + 1] : null;
+
+  document.getElementById('content-area').innerHTML = `
+    <div class="lesson-area">
+      <div class="lesson-tag"><span></span>${l.tag}</div>
+      <div class="lesson-title">${l.title}</div>
+      <div class="lesson-subtitle">${l.subtitle}</div>
+
+      <div class="concept-grid">
+        ${l.concepts.map(c => `
+          <div class="concept-card">
+            <div class="concept-icon">${c.icon}</div>
+            <div class="concept-title">${c.title}</div>
+            <div class="concept-desc">${c.desc}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="section">
+        <div class="section-title">Example Code</div>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">${l.codeLabel}</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre>${l.code}</pre>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Why This Matters for Jobs</div>
+        <div class="section-body">${l.explain}</div>
+        <div class="highlight">${l.highlight}</div>
+      </div>
+
+      <div class="quiz-box">
+        <div class="quiz-title">⚡ Knowledge Check</div>
+        <div class="quiz-q">${l.quiz.q}</div>
+        <div class="quiz-options">
+          ${l.quiz.options.map((opt, i) => `
+            <button class="quiz-option" onclick="answerQuiz(this, ${i}, ${l.quiz.correct}, '${l.quiz.explanation.replace(/'/g, "\\'")}')">
+              ${opt}
+            </button>
+          `).join('')}
+        </div>
+        <div class="quiz-feedback" id="quiz-fb"></div>
+      </div>
+
+      <div class="lesson-nav">
+        ${prevKey ? `<button class="btn btn-ghost" onclick="loadLesson('${prevKey}')">← ${lessons[prevKey].title}</button>` : '<div></div>'}
+        ${nextKey ? `<button class="btn btn-primary" onclick="loadLesson('${nextKey}')">Next: ${lessons[nextKey].title} →</button>` : '<button class="btn btn-success" onclick="showView(\'roadmap\')">🎉 View Roadmap</button>'}
+      </div>
+    </div>
+  `;
+}
+
+function answerQuiz(btn, chosen, correct, explanation) {
+  const options = btn.parentElement.querySelectorAll('.quiz-option');
+  options.forEach(b => b.disabled = true);
+  options[correct].classList.add('correct');
+  if (chosen !== correct) btn.classList.add('wrong');
+
+  const fb = document.getElementById('quiz-fb');
+  fb.className = 'quiz-feedback show ' + (chosen === correct ? 'ok' : 'bad');
+  fb.textContent = (chosen === correct ? '✓ Correct! ' : '✗ Not quite. ') + explanation;
+}
+
+function copyCode(btn) {
+  const code = btn.closest('.code-block').querySelector('pre').innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = 'copied!';
+    setTimeout(() => btn.textContent = 'copy', 1500);
+  });
+}
+
+function markDone() {
+  if (!currentLesson) return;
+  completed.add(currentLesson);
+  const navEl = document.getElementById('nav-' + currentLesson);
+  if (navEl) navEl.classList.add('done');
+  document.getElementById('mark-done-btn').style.display = 'none';
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = Math.round((completed.size / totalLessons) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+}
+
+// ===================== AI TUTOR =====================
+function renderAiTutor() {
+  document.getElementById('content-area').innerHTML = `
+    <div class="ai-chat">
+      <div class="ai-chat-title">AI Tutor</div>
+      <div class="ai-chat-sub">Ask anything about full-stack web development. Get answers tailored to learning and landing a job.</div>
+      <div class="chat-messages" id="chat-msgs">
+        <div class="msg msg-ai">👋 Hey! I'm your full-stack tutor. Ask me anything — how React works, what SQL joins do, how to prepare for interviews, or anything else about web dev.</div>
+      </div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="chat-in" placeholder="Ask a question..." onkeydown="if(event.key==='Enter') sendChat()" />
+        <button class="btn btn-primary" onclick="sendChat()">Send</button>
+      </div>
+    </div>
+  `;
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-in');
+  const msgs = document.getElementById('chat-msgs');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+
+  msgs.innerHTML += `<div class="msg msg-user">${text}</div>`;
+  msgs.innerHTML += `<div class="msg msg-ai loading" id="ai-loading">Thinking...</div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: 'You are an expert full-stack web development tutor helping someone prepare for their first dev job. Be concise, practical, and encouraging. Use short code examples when helpful. Focus on what employers actually care about. Keep responses under 200 words unless a longer explanation is truly needed.',
+        messages: [{ role: 'user', content: text }]
+      })
+    });
+
+    const data = await response.json();
+    const reply = data.content[0].text;
+
+    document.getElementById('ai-loading').remove();
+    msgs.innerHTML += `<div class="msg msg-ai">${reply.replace(/\n/g, '<br>')}</div>`;
+  } catch (err) {
+    document.getElementById('ai-loading').remove();
+    msgs.innerHTML += `<div class="msg msg-ai">Sorry, couldn't connect to the AI. Make sure you're running this on claude.ai or a platform with API access.</div>`;
+  }
+
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+// ===================== INIT =====================
+renderWelcome();
+</script>
+</body>
+</html>
